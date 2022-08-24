@@ -797,9 +797,9 @@ class YoutubeDL:
         self._pps[when].append(pp)
         pp.set_downloader(self)
 
-    def add_post_hook(self, ph):
+    def add_post_hook(self, ph,extra):
         """Add the post hook"""
-        self._post_hooks.append(ph)
+        self._post_hooks.append({"func":ph,"data":extra})
 
     def add_progress_hook(self, ph):
         """Add the download progress hook"""
@@ -3243,7 +3243,7 @@ class YoutubeDL:
                     return
                 try:
                     for ph in self._post_hooks:
-                        ph(info_dict['filepath'])
+                        ph.get("func",lambda *args: None)(info_dict['filepath'],ph.get("data",None))
                 except Exception as err:
                     self.report_error('post hooks: %s' % str(err))
                     return
